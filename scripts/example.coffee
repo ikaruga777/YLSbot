@@ -1,8 +1,33 @@
 
 module.exports = (robot) ->
+  POSITION = 'position'
   robot.enter (res) ->
     res.send("HI")
+    robot.brain.set(POSITION) or {}
 
+  robot.hear /init ([0-9]+)/i,(res) ->
+    robot.brain.set(POSITION, res.match[1])
+
+
+  stations = ['大崎','品川','田町','浜松町','新橋','有楽町',
+              '東京','神田','秋葉原','御徒町','上野','鶯谷',
+              '日暮里','西日暮里','田端','駒込','巣鴨','大塚',
+              '池袋','目白','高田馬場','新大久保','新宿','代々木',
+              '原宿','渋谷','恵比寿','目黒','五反田']
+  move = (dice,team)->
+    nextPosition = (dice + parseInt(robot.brain.get(POSITION) or 0,10))% stations.length
+    robot.brain.set(POSITION, nextPosition)
+    console.log(nextPosition)
+    console.log(stations.length)
+    stations[nextPosition]
+
+  nowStation
+
+  robot.hear /roll/i,(res) ->
+    dice = Math.floor( Math.random()*6 )+1
+    nextStation = move(dice)
+    message = "#{dice}がでたので,#{nextStation}に着陸"
+    res.send(message)
 
   # robot.hear /badger/i, (res) ->
   #   res.send "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS"
