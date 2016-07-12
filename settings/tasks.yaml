@@ -1,0 +1,59 @@
+- name : '大崎'
+  tasks:
+    -
+- name : '田町'
+  tasks: '慶應の正門まで歩け'
+- name : '浜松町'
+  tasks: ''
+- name : '新橋'
+  tasks: '銀座和光のビルを写真に納めろ'
+- name : '有楽町'
+  tasks: '銀座和光のビルを写真に納めろ'
+- name : '東京'
+  tasks: 'KITTE、丸の内ビルのテラスから東京駅の駅舎を写真に納めろ'
+  tasks: '地下街で美味しそうなもの買ってきて'
+- name : '神田'
+  tasks: ''
+- name : '秋葉原'
+  tasks: '神田明神まで歩け'
+  tasks:
+- name : '御徒町'
+  tasks:
+- name : '上野'
+  tasks:
+- name : '鶯谷'
+  tasks:
+- name : '日暮里'
+  tasks:
+- name : '西日暮里'
+  tasks:
+- name : '田端'
+  tasks: '山の手唯一の踏切を写真に納めろ'
+- name : '駒込'
+  tasks:
+- name : '巣鴨'
+  tasks: 'とげぬき地蔵ってなんですか?'
+- name : '大塚'
+  tasks:
+- name : '池袋'
+  tasks:
+- name : '目白'
+  tasks:
+- name : '高田馬場'
+  tasks:
+- name : '新大久保'
+  tasks:
+- name : '新宿'
+  tasks:
+- name : '代々木'
+  tasks:
+- name : '原宿'
+  tasks:
+- name : '渋谷'
+  tasks:
+- name : '恵比寿'
+  tasks:
+- name : '目黒'
+  tasks:
+- name : '五反田'
+  tasks:
