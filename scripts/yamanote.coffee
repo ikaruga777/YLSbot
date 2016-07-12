@@ -24,6 +24,7 @@ module.exports = (robot) ->
     robot.brain.set(key,value)
 
   robot.enter (res) ->
+    setStrageValue('YLS_TEAMS',JSON.stringify(TEAMS_INITIALIZER))
     res.send("HI")
 
   robot.hear /init ([0-9]+)/i,(res) ->
@@ -36,17 +37,19 @@ module.exports = (robot) ->
       nextPosition = STATIONS.length + nextPosition
     nextPosition
 
+  # チームの現在地を教えてくれる
   robot.hear /now (\w+)/i,(res) ->
     team = JSON.parse(getStrageValue('YLS_TEAMS'))[res.match[1]]
     console.log(team)
     message = "チーム#{res.match[1]}は今#{STATIONS[team.station]}にいます"
     res.send(message)
 
+  # サイコロをふる。
   robot.hear /roll (\w+)/i,(res) ->
     teams = JSON.parse(getStrageValue('YLS_TEAMS'))
     nowStation = teams[res.match[1]].station
     dice = Math.floor( Math.random()*6 )+1
-    nextStation = move(teams[res.match[1]],dice)
+    nextStation = move(teams[res.match[1]], dice)
     message = "#{STATIONS[nowStation]}にいるチーム#{res.match[1]}は\n"
     message +="#{dice}がでたので,#{STATIONS[nextStation]}に移動して下さい。"
     res.send(message)
