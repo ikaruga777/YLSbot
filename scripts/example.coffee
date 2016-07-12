@@ -29,8 +29,8 @@ module.exports = (robot) ->
   robot.hear /init ([0-9]+)/i,(res) ->
     setStrageValue('YLS_TEAMS',JSON.stringify(TEAMS_INITIALIZER))
 
-  # つぎの駅とお題を返す
-  move = (dice,team)->
+  # 駅移動
+  move = (team,dice)->
     nextPosition = (parseInt(team.station or 0,10) + (dice * team.direction) )% STATIONS.length
     if nextPosition < 0
       nextPosition = STATIONS.length + nextPosition
@@ -46,7 +46,7 @@ module.exports = (robot) ->
     teams = JSON.parse(getStrageValue('YLS_TEAMS'))
     nowStation = teams[res.match[1]].station
     dice = Math.floor( Math.random()*6 )+1
-    nextStation = move(dice,teams[res.match[1]])
+    nextStation = move(teams[res.match[1]],dice)
     message = "#{STATIONS[nowStation]}にいるチーム#{res.match[1]}は\n"
     message +="#{dice}がでたので,#{STATIONS[nextStation]}に移動して下さい。"
     res.send(message)
