@@ -3,7 +3,7 @@ module.exports = (robot) ->
 
   yaml =require('js-yaml')
   fs   = require('fs')
-  doc = yaml.load(fs.readFileSync('./settings/tasks.yaml', 'utf8'))
+  STATIONS_YAML = yaml.load(fs.readFileSync('./settings/tasks.yaml', 'utf8'))
 
 
 
@@ -38,16 +38,16 @@ module.exports = (robot) ->
 
   # 駅移動
   move = (team,dice)->
-    nextPosition = (parseInt(team.station or 0,10) + (dice * team.direction) )% STATIONS.length
+    nextPosition = (parseInt(team.station or 0,10) + (dice * team.direction) )% STATIONS_YAML.length
     if nextPosition < 0
-      nextPosition = STATIONS.length + nextPosition
+      nextPosition = STATIONS_YAML.length + nextPosition
     nextPosition
 
   # チームの現在地を教えてくれる
   robot.hear /now (\w+)/i,(res) ->
     team = JSON.parse(getStrageValue('YLS_TEAMS'))[res.match[1]]
     console.log(team)
-    message = "チーム#{res.match[1]}は今#{STATIONS[team.station]}にいます"
+    message = "チーム#{res.match[1]}は今#{STATIONS_YAML[team.station].name}にいます"
     res.send(message)
 
   # サイコロをふる。
@@ -56,8 +56,10 @@ module.exports = (robot) ->
     nowStation = teams[res.match[1]].station
     dice = Math.floor( Math.random()*6 )+1
     nextStation = move(teams[res.match[1]], dice)
-    message = "#{STATIONS[nowStation]}にいるチーム#{res.match[1]}は\n"
-    message +="#{dice}がでたので,#{STATIONS[nextStation]}に移動して下さい。"
+    message = "#{dice}がでました。\n
+               #{STATIONS_YAML[nowStation].name}にいるチーム#{res.match[1]}は
+               #{STATIONS_YAML[nextStation].name}に移動して下さい。
+               お題は#{STATIONS_YAML[nextStation].tasks[0]}です。"
     res.send(message)
     teams[res.match[1]].station = nextStation
     console.log(teams)
