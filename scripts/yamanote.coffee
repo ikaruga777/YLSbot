@@ -36,12 +36,18 @@ module.exports = (robot) ->
   robot.hear /init ([0-9]+)/i,(res) ->
     setStrageValue('YLS_TEAMS',JSON.stringify(TEAMS_INITIALIZER))
 
+  # ダイスロール
+  throwDice = ()->
+    Math.floor( Math.random()*6 )+1
   # 駅移動
   move = (team,dice)->
-    nextPosition = (parseInt(team.station or 0,10) + (dice * team.direction) )% STATIONS_YAML.length
-    if nextPosition < 0
-      nextPosition = STATIONS_YAML.length + nextPosition
-    nextPosition
+    origin = parseInt(team.station or 0,10)
+    # 循環させるために駅数のあまり
+    dest = (origin + (dice * team.direction) )% STATIONS_YAML.length
+    # 逆方向の循環
+    if dest < 0
+      dest = STATIONS_YAML.length + dest
+    dest
 
   # チームの現在地を教えてくれる
   robot.hear /now (\w+)/i,(res) ->
@@ -50,17 +56,53 @@ module.exports = (robot) ->
     message = "チーム#{res.match[1]}は今#{STATIONS_YAML[team.station].name}にいます"
     res.send(message)
 
+  # 駅のお題を適当に返す
+  getTaskRandom = (index)->
+    STATIONS_YAML[index].tasks[Math.floor( Math.random()*STATIONS_YAML[index].tasks.length )]
+
+  name2Index = (name) ->
+    index = null
+    if name
+      for i,station of STATIONS_YAML
+        if station.name == name
+          index = i
+          break
+    index
+
+
   # サイコロをふる。
   robot.hear /roll (\w+)/i,(res) ->
     teams = JSON.parse(getStrageValue('YLS_TEAMS'))
-    nowStation = teams[res.match[1]].station
-    dice = Math.floor( Math.random()*6 )+1
-    nextStation = move(teams[res.match[1]], dice)
+    origin = teams[res.match[1]].station
+    dice = throwDice()
+    destination = move(teams[res.match[1]], throwDice() )
+    task = getTaskRandom(destination)
+    console.log(destination)
+    # gotoあったら位置をgotoに合わせる
+    gotoIndex = name2Index(task.goto) or destination
+    console.log(gotoIndex)
     message = "#{dice}がでました。\n
-               #{STATIONS_YAML[nowStation].name}にいるチーム#{res.match[1]}は
-               #{STATIONS_YAML[nextStation].name}に移動して下さい。
-               お題は#{STATIONS_YAML[nextStation].tasks[0]}です。"
+               #{STATIONS_YAML[origin].name}にいるチーム#{res.match[1]}は
+               #{STATIONS_YAML[destination].name}に移動して下さい。\n
+               お題は#{task.summary}です。\n
+               終わったら#{STATIONS_YAML[gotoIndex].name}でrollしてください"
+
     res.send(message)
-    teams[res.match[1]].station = nextStation
-    console.log(teams)
+    if gotoIndex != -1
+      teams[res.match[1]].station = gotoIndex
+    else
+      teams[res.match[1]].station = destination
+
     setStrageValue('YLS_TEAMS',JSON.stringify(teams))
+
+  # 進行を逆向きに(通り過ぎた時用)
+  robot.hear /reverse (\w+)/i,(res) ->
+    teams = JSON.parse(getStrageValue('YLS_TEAMS'))
+    console.log(teams)
+    teams[res.match[1]].direction *= -1
+    if teams[res.match[1]].direction == INNER
+      direction = "内回り"
+    else
+      direction = "外回り"
+    setStrageValue('YLS_TEAMS',JSON.stringify(teams))
+    res.send("チーム#{res.match[1]}の進行方向を#{direction}に設定しました。")
