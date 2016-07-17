@@ -1,12 +1,7 @@
-
 module.exports = (robot) ->
-
   yaml =require('js-yaml')
   fs   = require('fs')
   STATIONS_YAML = yaml.load(fs.readFileSync('./settings/tasks.yaml', 'utf8'))
-
-
-
   INNER = 1
   OUTER = -1
   TEAMS_INITIALIZER =
@@ -36,9 +31,10 @@ module.exports = (robot) ->
   robot.hear /init ([0-9]+)/i,(res) ->
     setStrageValue('YLS_TEAMS',JSON.stringify(TEAMS_INITIALIZER))
 
-  # ダイスロール
-  throwDice = ()->
-    Math.floor( Math.random()*6 )+1
+  # ランダム
+  getRandom = (max)->
+    Math.floor( Math.random()* max)
+
   # 駅移動
   move = (team,dice)->
     origin = parseInt(team.station or 0,10)
@@ -58,8 +54,10 @@ module.exports = (robot) ->
 
   # 駅のお題を適当に返す
   getTaskRandom = (index)->
-    STATIONS_YAML[index].tasks[Math.floor( Math.random()*STATIONS_YAML[index].tasks.length )]
+    STATIONS_YAML[index].tasks[getRandom(STATIONS_YAML[index].tasks.length)]
 
+  # 駅名からindexを引っ張ってくる。
+  # なかったらnull返す
   name2Index = (name) ->
     index = null
     if name
@@ -74,10 +72,10 @@ module.exports = (robot) ->
   robot.hear /roll (\w+)/i,(res) ->
     teams = JSON.parse(getStrageValue('YLS_TEAMS'))
     origin = teams[res.match[1]].station
-    dice = throwDice()
-    destination = move(teams[res.match[1]], throwDice() )
+    pips = getRandom(6) + 1
+    destination = move(teams[res.match[1]], pips)
     task = getTaskRandom(destination)
-    console.log(destination)
+
     # gotoあったら位置をgotoに合わせる
     gotoIndex = name2Index(task.goto) or destination
     console.log(gotoIndex)
