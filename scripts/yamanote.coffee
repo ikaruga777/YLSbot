@@ -1,3 +1,10 @@
+# YamanoteLineSugoroku Organizer
+# Commands:
+# init
+# now
+# roll
+# reverse
+
 module.exports = (robot) ->
   yaml =require('js-yaml')
   fs   = require('fs')
