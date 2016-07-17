@@ -25,13 +25,6 @@ module.exports = (robot) ->
   setStrageValue = (key,value) ->
     robot.brain.set(key,value)
 
-  robot.enter (res) ->
-    setStrageValue('YLS_TEAMS',JSON.stringify(TEAMS_INITIALIZER))
-    res.send("HI")
-
-  robot.hear /init ([0-9]+)/i,(res) ->
-    setStrageValue('YLS_TEAMS',JSON.stringify(TEAMS_INITIALIZER))
-
   # ランダム
   getRandom = (max)->
     Math.floor( Math.random()* max)
@@ -45,13 +38,6 @@ module.exports = (robot) ->
     if dest < 0
       dest = STATIONS_YAML.length + dest
     dest
-
-  # チームの現在地を教えてくれる
-  robot.hear /now (\w+)/i,(res) ->
-    team = JSON.parse(getStrageValue('YLS_TEAMS'))[res.match[1]]
-    console.log(team)
-    message = "チーム#{res.match[1]}は今#{STATIONS_YAML[team.station].name}にいます"
-    res.send(message)
 
   # 駅のお題を適当に返す
   getTaskRandom = (index)->
@@ -68,6 +54,19 @@ module.exports = (robot) ->
           break
     index
 
+  robot.enter (res) ->
+    setStrageValue('YLS_TEAMS',JSON.stringify(TEAMS_INITIALIZER))
+    res.send("HI")
+
+  robot.hear /init ([0-9]+)/i,(res) ->
+    setStrageValue('YLS_TEAMS',JSON.stringify(TEAMS_INITIALIZER))
+
+  # チームの現在地を教えてくれる
+  robot.hear /now (\w+)/i,(res) ->
+    team = JSON.parse(getStrageValue('YLS_TEAMS'))[res.match[1]]
+    console.log(team)
+    message = "チーム#{res.match[1]}は今#{STATIONS_YAML[team.station].name}にいます"
+    res.send(message)
 
   # サイコロをふる。
   robot.hear /roll (\w+)/i,(res) ->
@@ -79,20 +78,16 @@ module.exports = (robot) ->
 
     # gotoあったら位置をgotoに合わせる
     gotoIndex = name2Index(task.goto) or destination
-    console.log(gotoIndex)
-    message = "#{dice}がでました。\n
+    teams[res.match[1]].station = gotoIndex
+    setStrageValue('YLS_TEAMS',JSON.stringify(teams))
+
+    message = "#{pips}がでました。\n
                #{STATIONS_YAML[origin].name}にいるチーム#{res.match[1]}は
                #{STATIONS_YAML[destination].name}に移動して下さい。\n
                お題は#{task.summary}です。\n
                終わったら#{STATIONS_YAML[gotoIndex].name}でrollしてください"
 
     res.send(message)
-    if gotoIndex != -1
-      teams[res.match[1]].station = gotoIndex
-    else
-      teams[res.match[1]].station = destination
-
-    setStrageValue('YLS_TEAMS',JSON.stringify(teams))
 
   # 進行を逆向きに(通り過ぎた時用)
   robot.hear /reverse (\w+)/i,(res) ->
