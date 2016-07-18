@@ -61,6 +61,24 @@ module.exports = (robot) ->
   robot.hear /init ([0-9]+)/i,(res) ->
     setStrageValue('YLS_TEAMS',JSON.stringify(TEAMS_INITIALIZER))
 
+  # チーム追加
+  robot.hear /team add (.+) (.+) (内|外)/i,(res) ->
+    teams = JSON.parse(getStrageValue('YLS_TEAMS'))
+    teamName = res.match[1]
+    if res.match[3] == '内'
+      direction = INNER
+    else
+      direction = OUTER
+    team = {}
+    teams[teamName] =
+      direction: res.match[3]
+      station: name2Index(res.match[2])
+    console.log(teams)
+    console.log(team)
+    setStrageValue('YLS_TEAMS',JSON.stringify(TEAMS_INITIALIZER))
+    res.send("#{teamName}を\nスタート: #{name2Index(res.match[2])}"
+    "\n#{res.match[3]}周りで追加しました。")
+
   # チームの現在地を教えてくれる
   robot.hear /now (\w+)/i,(res) ->
     team = JSON.parse(getStrageValue('YLS_TEAMS'))[res.match[1]]
