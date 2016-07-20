@@ -60,6 +60,14 @@ module.exports = (robot) ->
 
   robot.hear /init ([0-9]+)/i,(res) ->
     setStrageValue('YLS_TEAMS',JSON.stringify(TEAMS_INITIALIZER))
+  # チーム一覧
+  robot.hear /team list/i,(res) ->
+    teams = JSON.parse(getStrageValue('YLS_TEAMS'))
+    message = ""
+    console.log(Object.keys(teams))
+    for team in Object.keys(teams)
+      message += "#{team} "
+    res.send(message)
 
   # チーム追加
   robot.hear /team add (.+) (.+) (内|外)/i,(res) ->
@@ -69,14 +77,13 @@ module.exports = (robot) ->
       direction = INNER
     else
       direction = OUTER
-    team = {}
+
     teams[teamName] =
-      direction: res.match[3]
+      direction: direction
       station: name2Index(res.match[2])
     console.log(teams)
-    console.log(team)
-    setStrageValue('YLS_TEAMS',JSON.stringify(TEAMS_INITIALIZER))
-    res.send("#{teamName}を\nスタート: #{name2Index(res.match[2])}"
+    setStrageValue('YLS_TEAMS',JSON.stringify(teams))
+    res.send("#{teamName}を\nスタート: #{res.match[2]}"
     "\n#{res.match[3]}周りで追加しました。")
 
   # チームの現在地を教えてくれる
@@ -88,6 +95,7 @@ module.exports = (robot) ->
 
   # サイコロをふる。
   robot.hear /roll (\w+)/i,(res) ->
+    console.log("roll #{res.match[1]}")
     teams = JSON.parse(getStrageValue('YLS_TEAMS'))
     origin = teams[res.match[1]].station
     pips = getRandom(6) + 1
