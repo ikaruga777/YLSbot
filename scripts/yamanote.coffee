@@ -60,6 +60,8 @@ module.exports = (robot) ->
 
   robot.hear /init ([0-9]+)/i,(res) ->
     setStrageValue('YLS_TEAMS',JSON.stringify(TEAMS_INITIALIZER))
+    res.send("initialized!")
+
   # チーム一覧
   robot.hear /team list/i,(res) ->
     teams = JSON.parse(getStrageValue('YLS_TEAMS'))
@@ -70,9 +72,15 @@ module.exports = (robot) ->
     res.send(message)
 
   # チーム追加
-  robot.hear /team add (.+) (.+) (内|外)/i,(res) ->
+  robot.hear /team add *(.+) (.+) (内|外)/i,(res) ->
     teams = JSON.parse(getStrageValue('YLS_TEAMS'))
     teamName = res.match[1]
+    station = name2Index(res.match[2])
+    if station == null
+      res.send("そんな駅ないよ"
+      "team add [チーム名] [初期駅名] [外or内]")
+      return
+
     if res.match[3] == '内'
       direction = INNER
     else
@@ -80,23 +88,32 @@ module.exports = (robot) ->
 
     teams[teamName] =
       direction: direction
-      station: name2Index(res.match[2])
+      station: station
     console.log(teams)
     setStrageValue('YLS_TEAMS',JSON.stringify(teams))
-    res.send("#{teamName}を\nスタート: #{res.match[2]}"
-    "\n#{res.match[3]}周りで追加しました。")
+    res.send("#{teamName}を\nスタート: #{res.match[2]}\n"
+    "#{res.match[3]}周りで追加しました。")
 
   # チームの現在地を教えてくれる
-  robot.hear /now (\w+)/i,(res) ->
-    team = JSON.parse(getStrageValue('YLS_TEAMS'))[res.match[1]]
+  robot.hear /now (\S+)/i,(res) ->
+    teams = JSON.parse(getStrageValue('YLS_TEAMS'))
+    if teams[res.match[1]] == null
+      res.send("そんなちーむいないよ")
+      return
+    team = teams[res.match[1]]
     console.log(team)
-    message = "チーム#{res.match[1]}は今#{STATIONS_YAML[team.station].name}にいます"
+    message = "チーム#{res.match[1]}は今"+
+    "#{STATIONS_YAML[team.station].name}にいます"
     res.send(message)
 
   # サイコロをふる。
-  robot.hear /roll (\w+)/i,(res) ->
-    console.log("roll #{res.match[1]}")
+  robot.hear /roll (\S+)/i,(res) ->
     teams = JSON.parse(getStrageValue('YLS_TEAMS'))
+    console.log("roll #{res.match[1]}")
+    if teams[res.match[1]] == null
+      res.send("そんなちーむいないよ")
+      return
+
     origin = teams[res.match[1]].station
     pips = getRandom(6) + 1
     destination = move(teams[res.match[1]], pips)
@@ -116,9 +133,12 @@ module.exports = (robot) ->
     res.send(message)
 
   # 進行を逆向きに(通り過ぎた時用)
-  robot.hear /reverse (\w+)/i,(res) ->
+  robot.hear /reverse (\S+)/i,(res) ->
     teams = JSON.parse(getStrageValue('YLS_TEAMS'))
     console.log(teams)
+    if teams[res.match[1]] == null
+      res.send("そんなちーむいないよ")
+      return
     teams[res.match[1]].direction *= -1
     if teams[res.match[1]].direction == INNER
       direction = "内回り"
