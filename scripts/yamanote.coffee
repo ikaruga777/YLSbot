@@ -91,7 +91,7 @@ module.exports = (robot) ->
       station: station
     console.log(teams)
     setStrageValue('YLS_TEAMS',JSON.stringify(teams))
-    res.send("#{teamName}を\nスタート: #{res.match[2]}\n"
+    res.send("チーム「#{teamName}」を\n#{res.match[2]}スタート"
     "#{res.match[3]}周りで追加しました。")
 
   # チームの現在地を教えてくれる
