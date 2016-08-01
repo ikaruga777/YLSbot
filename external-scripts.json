@@ -9,4 +9,5 @@
   "hubot-rules",
   "hubot-shipit",
   "hubot-reload-scripts"
+  "js-yaml"
 ]
