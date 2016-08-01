@@ -8,7 +8,7 @@
 module.exports = (robot) ->
   yaml =require('js-yaml')
   fs   = require('fs')
-  STATIONS_YAML = yaml.load(fs.readFileSync('./settings/tasks.yaml', 'utf8'))
+  STATIONS_YAML = yaml.load(fs.readFileSync('./public/tasks.yaml', 'utf8'))
   INNER = 1
   OUTER = -1
   TEAMS_INITIALIZER =
