@@ -4,6 +4,8 @@
 # now
 # roll
 # reverse
+# team list
+# team add [チーム名] [初期駅名] [外or内]
 
 module.exports = (robot) ->
   yaml =require('js-yaml')
