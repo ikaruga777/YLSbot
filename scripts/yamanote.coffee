@@ -70,7 +70,7 @@ module.exports = (robot) ->
     message = ""
     console.log(Object.keys(teams))
     for team in Object.keys(teams)
-      message += "#{team} "
+      message += "#{team} ,"
     res.send(message)
 
   # チーム追加
@@ -99,7 +99,7 @@ module.exports = (robot) ->
   # チームの現在地を教えてくれる
   robot.hear /now (\S+)/i,(res) ->
     teams = JSON.parse(getStrageValue('YLS_TEAMS'))
-    if teams[res.match[1]] == null
+    if !teams[res.match[1]]
       res.send("そんなちーむいないよ")
       return
     team = teams[res.match[1]]
@@ -112,7 +112,7 @@ module.exports = (robot) ->
   robot.hear /roll (\S+)/i,(res) ->
     teams = JSON.parse(getStrageValue('YLS_TEAMS'))
     console.log("roll #{res.match[1]}")
-    if teams[res.match[1]] == null
+    if !teams[res.match[1]]
       res.send("そんなちーむいないよ")
       return
 
@@ -138,7 +138,7 @@ module.exports = (robot) ->
   robot.hear /reverse (\S+)/i,(res) ->
     teams = JSON.parse(getStrageValue('YLS_TEAMS'))
     console.log(teams)
-    if teams[res.match[1]] == null
+    if !teams[res.match[1]]
       res.send("そんなちーむいないよ")
       return
     teams[res.match[1]].direction *= -1
