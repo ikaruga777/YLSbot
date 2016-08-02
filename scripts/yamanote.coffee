@@ -79,7 +79,7 @@ module.exports = (robot) ->
     teamName = res.match[1]
     station = name2Index(res.match[2])
     if station == null
-      res.send("そんな駅ないよ"
+      res.send("そんな駅ないよ\n" +
       "team add [チーム名] [初期駅名] [外or内]")
       return
 
@@ -93,8 +93,8 @@ module.exports = (robot) ->
       station: station
     console.log(teams)
     setStrageValue('YLS_TEAMS',JSON.stringify(teams))
-    res.send("チーム「#{teamName}」を\n#{res.match[2]}スタート"
-    "#{res.match[3]}周りで追加しました。")
+    res.send("チーム「#{teamName}」を\n#{res.match[2]}スタート" +
+              "#{res.match[3]}周りで追加しました。")
 
   # チームの現在地を教えてくれる
   robot.hear /now (\S+)/i,(res) ->
@@ -104,8 +104,8 @@ module.exports = (robot) ->
       return
     team = teams[res.match[1]]
     console.log(team)
-    message = "チーム#{res.match[1]}は今"+
-    "#{STATIONS_YAML[team.station].name}にいます"
+    message = "チーム#{res.match[1]}は今" +
+              "#{STATIONS_YAML[team.station].name}にいます"
     res.send(message)
 
   # サイコロをふる。
@@ -126,11 +126,11 @@ module.exports = (robot) ->
     teams[res.match[1]].station = gotoIndex
     setStrageValue('YLS_TEAMS',JSON.stringify(teams))
 
-    message = "#{pips}がでました。\n
-               #{STATIONS_YAML[origin].name}にいるチーム#{res.match[1]}は
-               #{STATIONS_YAML[destination].name}に移動して下さい。\n
-               お題は#{task.summary}です。\n
-               終わったら#{STATIONS_YAML[gotoIndex].name}でrollしてください"
+    message = "#{pips}がでました。\n" +
+              "#{STATIONS_YAML[origin].name}にいるチーム#{res.match[1]}は" +
+              "#{STATIONS_YAML[destination].name}に移動して下さい。" +
+              "お題は#{task.summary}です。" +
+              "終わったら#{STATIONS_YAML[gotoIndex].name}でrollしてください。"
 
     res.send(message)
 
