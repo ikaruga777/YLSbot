@@ -128,8 +128,8 @@ module.exports = (robot) ->
 
     message = "#{pips}がでました。\n" +
               "#{STATIONS_YAML[origin].name}にいるチーム#{res.match[1]}は" +
-              "#{STATIONS_YAML[destination].name}に移動して下さい。" +
-              "お題は#{task.summary}です。" +
+              "#{STATIONS_YAML[destination].name}に移動して下さい。\n" +
+              "お題は「#{task.summary}」です。\n" +
               "終わったら#{STATIONS_YAML[gotoIndex].name}でrollしてください。"
 
     res.send(message)
