@@ -9,7 +9,7 @@
 
 module.exports = (robot) ->
   yaml =require('js-yaml')
-  fs   = require('fs')
+  fs = require('fs')
   STATIONS_YAML = yaml.load(fs.readFileSync('./public/tasks.yaml', 'utf8'))
   INNER = 1
   OUTER = -1
@@ -94,7 +94,7 @@ module.exports = (robot) ->
     console.log(teams)
     setStrageValue('YLS_TEAMS',JSON.stringify(teams))
     res.send("チーム「#{teamName}」を\n#{res.match[2]}スタート" +
-              "#{res.match[3]}周りで追加しました。")
+      "#{res.match[3]}周りで追加しました。")
 
   # チームの現在地を教えてくれる
   robot.hear /now (\S+)/i,(res) ->
@@ -105,7 +105,7 @@ module.exports = (robot) ->
     team = teams[res.match[1]]
     console.log(team)
     message = "チーム#{res.match[1]}は今" +
-              "#{STATIONS_YAML[team.station].name}にいます"
+      "#{STATIONS_YAML[team.station].name}にいます"
     res.send(message)
 
   # サイコロをふる。
@@ -127,10 +127,10 @@ module.exports = (robot) ->
     setStrageValue('YLS_TEAMS',JSON.stringify(teams))
 
     message = "#{pips}がでました。\n" +
-              "#{STATIONS_YAML[origin].name}にいるチーム#{res.match[1]}は" +
-              "#{STATIONS_YAML[destination].name}に移動して下さい。\n" +
-              "お題は「#{task.summary}」です。\n" +
-              "終わったら#{STATIONS_YAML[gotoIndex].name}でrollしてください。"
+      "#{STATIONS_YAML[origin].name}にいるチーム#{res.match[1]}は" +
+      "#{STATIONS_YAML[destination].name}に移動して下さい。\n" +
+      "お題は「#{task.summary}」です。\n" +
+      "終わったら#{STATIONS_YAML[gotoIndex].name}でrollしてください。"
 
     res.send(message)
 
