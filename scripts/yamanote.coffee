@@ -148,3 +148,9 @@ module.exports = (robot) ->
       direction = "外回り"
     setStrageValue('YLS_TEAMS',JSON.stringify(teams))
     res.send("チーム#{res.match[1]}の進行方向を#{direction}に設定しました。")
+
+
+  robot.router.get '/', (req, res) ->
+    console.log("get root")
+    teams = JSON.parse(getStrageValue('YLS_TEAMS'))
+    res.end JSON.stringify(teams)
