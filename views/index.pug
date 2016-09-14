@@ -1,5 +1,8 @@
-doctype html
-html(lang="ja")
-  head
-  body
-    h1 hello world
+extends layout
+
+block content
+  h1 hello world
+  div= teams.red.station
+
+block logs
+  div= logs[3]

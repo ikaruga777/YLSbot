@@ -27,6 +27,15 @@ module.exports = (robot) ->
   setStrageValue = (key,value) ->
     robot.brain.set(key,value)
 
+  writeLog = (message) ->
+    logs = JSON.parse(getStrageValue('YLS_LOGS'))
+    if logs == null then logs = []
+    console.log('write:',message)
+    logs.push(message)
+
+    setStrageValue('YLS_LOGS',JSON.stringify(logs))
+    console.log('logs:',logs)
+
   # ランダム
   getRandom = (max)->
     Math.floor( Math.random()* max)
@@ -133,6 +142,7 @@ module.exports = (robot) ->
       "終わったら#{STATIONS_YAML[gotoIndex].name}でrollしてください。"
 
     res.send(message)
+    writeLog(message)
 
   # 進行を逆向きに(通り過ぎた時用)
   robot.hear /reverse (\S+)/i,(res) ->
@@ -147,11 +157,16 @@ module.exports = (robot) ->
     else
       direction = "外回り"
     setStrageValue('YLS_TEAMS',JSON.stringify(teams))
-    res.send("チーム#{res.match[1]}の進行方向を#{direction}に設定しました。")
+    message = "チーム#{res.match[1]}の進行方向を#{direction}に設定しました。"
+    res.send(message)
+    writeLog(message)
+
 
   robot.router.set('view engine', 'pug')
 
   robot.router.get '/', (req, res) ->
     console.log("get root")
     teams = JSON.parse(getStrageValue('YLS_TEAMS'))
-    res.render('index',{})
+    logs = JSON.parse(getStrageValue('YLS_LOGS'))
+    console.log(logs)
+    res.render('index',{teams: teams,logs: logs})
