@@ -32,7 +32,7 @@ module.exports = (robot) ->
     if logs == null then logs = []
     console.log('write:',message)
     logs.push(message)
-
+    if logs.length > 10 then logs.shift()
     setStrageValue('YLS_LOGS',JSON.stringify(logs))
     console.log('logs:',logs)
 
