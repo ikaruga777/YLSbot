@@ -2,19 +2,17 @@ extends layout
 
 block content
   h1 hello world
-  svg(width="1200" height="480"
-    viewPort="0 0 1200 480" version="1.1"
-    xmlns="http://www.w3.org/2000/svg")
-    marker(id="arr" refX="0" refY="1")
-      path(d="M0,0 L2,1 0,2 Z" fill="#eab942")
+  div#app
+    svg(width="640" height="480"
+      viewPort="0 0 640 480" version="1.1"
+      xmlns="http://www.w3.org/2000/svg")
+      circle(cx="240" cy="240" r="200"
+        fill="none" stroke-width="20" stroke-dasharray="20 10" stroke="black" )
+      circle(
+        cx=240+200*Math.cos(12*teams.red.station/180*Math.PI)
+        cy=240+200*Math.sin(12*teams.red.station/180*Math.PI) r="2"
+        fill="red" stroke-width="10" stroke="red" )
 
-    path(
-      d="M 300,50 m -75, 0 a 200,200 0 1,0 150,0 a 200,200 0 0,0 -150,0 "
-        fill="none" stroke="black" stroke-dasharray="30 10" stroke-width="20")
-    circle(cx="740" cy="240" r="200"
-      fill="none" stroke-width="20" stroke="black" stroke-dasharray="30 10")
-
-  div= teams.red.station
-
+    div(class="redstation")= teams.red.station
 block logs
   textarea( rows="15" cols="80")= logs.join('\n\n')

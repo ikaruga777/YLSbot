@@ -1,5 +1,5 @@
 vm = new Vue(
-  el: ".app",
+  el: ".app"
   data:
     teams:{}
   created: ->
