@@ -161,9 +161,7 @@ module.exports = (robot) ->
     res.send(message)
     writeLog(message)
 
-
   robot.router.set('view engine', 'pug')
-
   robot.router.get '/', (req, res) ->
     console.log("get root")
     teams = JSON.parse(getStrageValue('YLS_TEAMS'))

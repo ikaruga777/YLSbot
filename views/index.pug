@@ -2,17 +2,12 @@ extends layout
 
 block content
   h1 hello world
-  div#app
-    svg(width="640" height="480"
+  div#app(v-cloak)
+    svg( width="640" height="480"
       viewPort="0 0 640 480" version="1.1"
       xmlns="http://www.w3.org/2000/svg")
-      circle(cx="240" cy="240" r="200"
-        fill="none" stroke-width="20" stroke-dasharray="20 10" stroke="black" )
-      circle(
-        cx=240+200*Math.cos(12*teams.red.station/180*Math.PI)
-        cy=240+200*Math.sin(12*teams.red.station/180*Math.PI) r="2"
-        fill="red" stroke-width="10" stroke="red" )
-
-    div(class="redstation")= teams.red.station
+      yamanaote-map
+      team-position( :station=teams.red.station)
+      div(class="redstation")= teams.red.station
 block logs
   textarea( rows="15" cols="80")= logs.join('\n\n')
