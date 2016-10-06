@@ -17,9 +17,11 @@ module.exports = (robot) ->
     'red':
       direction:INNER
       station: 0
+      doingTask: false
     'blue':
       direction:OUTER
       station:0
+      doingTask: false
 
   getStrageValue = (key) ->
     robot.brain.get(key)
@@ -78,6 +80,7 @@ module.exports = (robot) ->
     teams = JSON.parse(getStrageValue('YLS_TEAMS'))
     teamName = res.match[1]
     station = name2Index(res.match[2])
+    doingTask = false
     if station == null
       res.send("そんな駅ないよ\n" +
       "team add [チーム名] [初期駅名] [外or内]")
@@ -115,6 +118,11 @@ module.exports = (robot) ->
     if !teams[res.match[1]]
       res.send("そんなちーむいないよ")
       return
+    if teams[res.match[1]].doingTask
+      message = "チーム#{res.match[1]}はまだお題をこなしていません。\n" +
+        "お題が終わったら`done #{res.match[1]}`と発言してください。"
+      res.send(message)
+      return
 
     origin = teams[res.match[1]].station
     pips = getRandom(6) + 1
@@ -124,14 +132,29 @@ module.exports = (robot) ->
     # gotoあったら位置をgotoに合わせる
     gotoIndex = name2Index(task.goto) or destination
     teams[res.match[1]].station = gotoIndex
+    teams[res.match[1]].doingTask = true
     setStrageValue('YLS_TEAMS',JSON.stringify(teams))
 
     message = "#{pips}がでました。\n" +
       "#{STATIONS_YAML[origin].name}にいるチーム#{res.match[1]}は" +
       "#{STATIONS_YAML[destination].name}に移動して下さい。\n" +
       "お題は「#{task.summary}」です。\n" +
-      "終わったら#{STATIONS_YAML[gotoIndex].name}でrollしてください。"
+      "終わったら`done#{res.match[1]}`と発言し" +
+      "#{STATIONS_YAML[gotoIndex].name}でrollしてください。"
 
+    res.send(message)
+
+  # 課題が終わったのでサイコロ振る権利を得る
+  robot.hear /done (\S+)/i,(res) ->
+    teams = JSON.parse(getStrageValue('YLS_TEAMS'))
+    console.log("done #{res.match[1]}")
+    if !teams[res.match[1]]
+      res.send("そんなちーむいないよ")
+      return
+    teams[res.match[1]].doingTask = false
+    setStrageValue('YLS_TEAMS',JSON.stringify(teams))
+    message = "お疲れ様でした。"+
+      "`roll #{res.match[1]}`でサイコロを振って下さい。"
     res.send(message)
 
   # 進行を逆向きに(通り過ぎた時用)
