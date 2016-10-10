@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1 hello world
+  div#app(v-cloak)
+    svg( width="640" height="480"
+      viewPort="0 0 640 480" version="1.1"
+      xmlns="http://www.w3.org/2000/svg")
+      yamanaote-map
+      team-position( :station=teams.red.station)
+      div(class="redstation")= teams.red.station
+block logs
+  textarea( rows="15" cols="80")= logs.join('\n\n')

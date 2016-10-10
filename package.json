@@ -20,9 +20,14 @@
     "hubot-scripts": "^2.17.2",
     "hubot-shipit": "^0.2.0",
     "hubot-slack": "^3.4.2",
-    "js-yaml": "^3.6.1"
+    "js-yaml": "^3.6.1",
+    "pug": "^2.0.0-beta6"
   },
   "engines": {
     "node": "0.10.x"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-coffee": "^2.3.2"
   }
 }
