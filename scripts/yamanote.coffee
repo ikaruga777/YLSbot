@@ -1,9 +1,8 @@
 # YamanoteLineSugoroku Organizer
 # Commands:
-# init
-# now
-# roll
-# reverse
+# now [チーム名]
+# roll [チーム名]
+# reverse [チーム名]
 # team list
 # team add [チーム名] [初期駅名] [外or内]
 
