@@ -13,3 +13,11 @@ $ git clone this-repository
 $ npm install
 $ bin/hubot
 ```
+
+## 進行方法(いまんところ)
+- 起動した後で`init 0`
+- `team add [チーム名] [初期駅名] [内まわり｜外まわり]`でチーム追加
+- `roll チーム名` でサイコロ振る。一回振ったら課題をdoneしないと次のサイコロは振れない。
+- 'done チーム名' 課題終わり。rollでサイコロを振れるようになる。  
+- `roll`と`done`を繰り返す。
+- `reverse チーム名`で進行方向を逆にする。
