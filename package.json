@@ -21,7 +21,7 @@
     "hubot-shipit": "^0.2.0",
     "hubot-slack": "^4.2.1",
     "js-yaml": "^3.6.1",
-    "hubot-uvb76line": "0.0.7",
+    "hubot-uvb76line": "0.0.8",
     "pug": "^2.0.0-beta6"
   },
   "engines": {
