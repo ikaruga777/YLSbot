@@ -169,21 +169,29 @@ module.exports = (robot) ->
     writeLog(message)
 
   # 進行を逆向きに(通り過ぎた時用)
-  robot.hear /reverse (\S+)/i,(res) ->
+  robot.hear /(🔙|reverse) *(\S+)/i,(res) ->
     teams = JSON.parse(getStrageValue('YLS_TEAMS'))
     console.log(teams)
-    if !teams[res.match[1]]
+    name = res.match[2]
+    if !teams[name]
       res.send("そんなちーむいないよ")
       return
-    teams[res.match[1]].direction *= -1
-    if teams[res.match[1]].direction == INNER
+    teams[name].direction *= -1
+    if teams[name].direction == INNER
       direction = "内回り"
     else
       direction = "外回り"
     setStrageValue('YLS_TEAMS',JSON.stringify(teams))
-    message = "チーム#{res.match[1]}の進行方向を#{direction}に設定しました。"
+    message = "チーム#{name}の進行方向を#{direction}に設定しました。"
     res.send(message)
     writeLog(message)
+
+  #指定した駅のタスク一覧を出す(確認用)
+  robot.hear /🚉 +(\S+)/i,(res)->
+    unless name2Index(res.match[1])? then return
+    summaries = STATIONS_YAML[name2Index(res.match[1])].tasks
+    res.send (summaries.map (t)-> t.summary).join("\r\n")
+
 
   robot.router.set('view engine', 'pug')
   robot.router.get '/', (req, res) ->
