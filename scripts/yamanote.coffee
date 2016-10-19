@@ -75,12 +75,11 @@ module.exports = (robot) ->
     res.send("initialized!")
 
   # チーム一覧
-  robot.hear /(team *list)|一覧/i,(res) ->
+  robot.hear /(team *list)|チーム一覧/i,(res) ->
     teams = JSON.parse(getStrageValue('YLS_TEAMS'))
     message = ""
-    console.log(Object.keys(teams))
     for team in Object.keys(teams)
-      message += "#{team} ,"
+      message += "・#{team}:#{STATIONS_YAML[teams[team].station].name}\n"
     res.send(message)
 
   # チーム追加
@@ -108,7 +107,7 @@ module.exports = (robot) ->
       "#{res.match[3]}周りで追加しました。")
 
   # チームの現在地を教えてくれる
-  robot.hear /(now +(\S+))|((\S+).*どこ)/i,(res) ->
+  robot.hear /(now *(\S+))|((\S+).*どこ)/i,(res) ->
     teams = JSON.parse(getStrageValue('YLS_TEAMS'))
     if !teams[res.match[2]]
       console.log("now:#{res.match[2]}")
@@ -148,25 +147,24 @@ module.exports = (robot) ->
       "#{STATIONS_YAML[origin].name}にいるチーム#{name}は" +
       "#{STATIONS_YAML[destination].name}に移動して下さい。\n" +
       "お題は「#{task.summary}」です。\n" +
-      "終わったら`done #{name}`と発言し" +
-      "#{STATIONS_YAML[gotoIndex].name}でrollしてください。"
-
+      "終わったら`done #{name}`と発言してください。"
+    writeLog(message)
     res.send(message)
 
   # 課題が終わったのでサイコロ振る権利を得る
   robot.hear /(done|✔️|✅|🏁) *(\S+)/i,(res) ->
     name = res.match[2]
     teams = JSON.parse(getStrageValue('YLS_TEAMS'))
+    team = teams[name]
     console.log("done #{name}")
-    if !teams[name]
+    if !team
       res.send("そんなちーむいないよ")
       return
-    teams[name].doingTask = false
+    team.doingTask = false
     setStrageValue('YLS_TEAMS',JSON.stringify(teams))
     message = "お疲れ様でした。"+
-      "`roll #{name}`でサイコロを振って下さい。"
+      "チーム #{name}は#{STATIONS_YAML[team.station].name}で次のサイコロを振って下さい。"
     res.send(message)
-    writeLog(message)
 
   # 進行を逆向きに(通り過ぎた時用)
   robot.hear /(🔙|reverse) *(\S+)/i,(res) ->
@@ -187,10 +185,10 @@ module.exports = (robot) ->
     writeLog(message)
 
   #指定した駅のタスク一覧を出す(確認用)
-  robot.hear /🚉 +(\S+)/i,(res)->
+  robot.hear /🚉 *(\S+)/i,(res)->
     unless name2Index(res.match[1])? then return
     summaries = STATIONS_YAML[name2Index(res.match[1])].tasks
-    res.send (summaries.map (t)-> t.summary).join("\r\n")
+    res.send (summaries.map (t)-> "・#{t.summary}").join("\r\n")
 
 
   robot.router.set('view engine', 'pug')
