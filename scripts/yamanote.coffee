@@ -9,7 +9,10 @@
 module.exports = (robot) ->
   yaml =require('js-yaml')
   fs = require('fs')
-  STATIONS_YAML = yaml.load(fs.readFileSync('./public/tasks.yaml', 'utf8'))
+  request = require('request')
+  tasksFilePath = './public/tasks.yaml'
+  STATIONS_YAML = yaml.load(fs.readFileSync( tasksFilePath, 'utf8'))
+
   INNER = 1
   OUTER = -1
   TEAMS_INITIALIZER =
@@ -27,6 +30,23 @@ module.exports = (robot) ->
 
   setStrageValue = (key,value) ->
     robot.brain.set(key,value)
+
+  LoadStationTask = (YamlUrl) ->
+    if YamlUrl?
+      tasksFilePath = YamlUrl
+      robot.logger.info "Station file source: #{tasksFilePath}"
+      request tasksFilePath ,(err,res) ->
+        if err?
+          robot.logger.error "Station file load Failed...:#{err}"
+        else
+          STATIONS_YAML = yaml.load(res.body)
+          console.log STATIONS_YAML.length
+          robot.logger.info "Station file load OK."
+    else
+      tasksFilePath = './public/tasks.yaml'
+      robot.logger.info "Station file source: #{tasksFilePath}"
+      STATIONS_YAML = yaml.load(fs.readFileSync( tasksFilePath, 'utf8'))
+
 
   writeLog = (message) ->
     logs = JSON.parse(getStrageValue('YLS_LOGS'))
@@ -71,6 +91,8 @@ module.exports = (robot) ->
     res.send("HI")
 
   robot.hear /init ([0-9]+)/i,(res) ->
+    STATIONS_YAML = LoadStationTask(process.env.HUBOT_YLSBOT_TASK_FILE_PATH)
+
     setStrageValue('YLS_TEAMS',JSON.stringify(TEAMS_INITIALIZER))
     res.send("initialized!")
 
