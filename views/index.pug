@@ -7,7 +7,10 @@ block content
       viewPort="0 0 640 480" version="1.1"
       xmlns="http://www.w3.org/2000/svg")
       yamanaote-map
-      team-position( :station=teams.red.station)
-      div(class="redstation")= teams.red.station
+      each team in teams
+        team-position( :station=team.station)
+    each team in teams
+      div(class="station")= team.station
+
 block logs
   textarea( rows="15" cols="80")= logs.join('\n\n')
